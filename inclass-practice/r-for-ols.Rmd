@@ -148,3 +148,10 @@ stargazer(model_1, model_2,
           type="html",
           align=TRUE)
 ```
+```{r}
+tidy(model_1_coeftest)-> model1CoeftestDF
+tidy(model_2_coeftest)-> model2CoeftestDF
+```
+```{r}
+stargazer(model_1,model_2,se=list(model_1_Coeftest[,"Std. Error"],model_2_coeftest[,2]),type = "html",align=TRUE)
+```
