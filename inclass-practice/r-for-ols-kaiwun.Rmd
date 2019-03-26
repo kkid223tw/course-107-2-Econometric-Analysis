@@ -14,7 +14,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, eval=TRUE)
+knitr::opts_chunk$set(echo = TRUE, eval=F)
 ```
 
 # 參考資料
@@ -149,7 +149,7 @@ log(subs)~log(citeprice) %>%
 ```
 ## 模型比較
 
-```{r ols-comp-r, results='hide', warning=FALSE}
+```{r,results='asis'}
 journals %>% 
   lm(log(subs)~log(citeprice),data=.) -> model_1
 journals %>%
