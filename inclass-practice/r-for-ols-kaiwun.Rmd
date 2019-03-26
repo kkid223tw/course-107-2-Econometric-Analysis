@@ -14,7 +14,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, eval=F)
+knitr::opts_chunk$set(echo = TRUE, eval=TRUE)
 ```
 
 # 參考資料
@@ -54,6 +54,7 @@ data("Journals")
 # 資料處理：產生新變數 dplyr::mutate
 
 ```{r ch2-summary, results='hide'}
+#if follow usage
 mutate(Journals,citeprice=price/citations) -> journals
 #pipe expression
 journals %>% mutate(citeprice=price/citations) -> journals
@@ -64,6 +65,7 @@ journals %>% mutate(citeprice=price/citations) -> journals
 > 期刊的價格(citeprice，平均文獻引用價格)如何影響其圖書館訂閱量(subs)? 
 
 ```{r ols-paircorr-r, echo=TRUE}
+#成對變數關聯性的套件
 library(psych)
 journals %>% 
   select(citeprice,subs) %>%
@@ -72,7 +74,7 @@ journals %>%
 ```{r}
 # traditional usage
 select(journals,citeprice,subs) ->
-tempDF
+tempDF 
 pairs.panels(tempDF)
 ```
 ```{r}
@@ -87,11 +89,12 @@ tempDF %>%
 ```{r ols-paircorr2-r}
 journals %>% 
   select(citeprice,subs) %>%
+  #mutate_all是對所有變數進行
   mutate_all(log) %>%
   pairs.panels()
 ```
 
-> 為什麼取log後，兩者的相關度變高？它表示兩個變數變得更不獨立嗎？
+> 為什麼取log後，兩者的相關度變高？ㄧ它表示兩個變數變得更不獨立嗎？有更相關但是關連性沒有被改變
 
 # 效應評估
 
@@ -105,7 +108,15 @@ journals %>%
 數值變數v.s.數值變數
 
 ```{r ols-paircoor3-r, results='hide'}
+# 判斷變數是否為數值類別
+is_numeric<-function(x) all(is.numeric(x))
+# 計算數數與citeprice的相關係數
+cor_citeprice<-function(x) cor(x,journals$citeprice)
 
+journals %>%  
+  select_if(is_numeric) %>%
+  summarise_all(cor_citeprice) %>%
+  kable()
 
 ```
 
@@ -116,12 +127,44 @@ journals %>%
 # 複迴歸模型
 
 ```{r}
+library(broom)
+journals %>% 
+  lm(log(subs)~log(citeprice),data=.) -> model1
 
+journals %>%
+  lm(log(subs)~log(citeprice)+foundingyear,data=.) -> model2
+```
+```{r}
+#traditional
+lm(log(subs)~log(citeprice),data=journals)
+
+#pipe 1
+log(subs)~log(citeprice) %>%
+  lm(data=journals)
+#pipe 2
+journals %>%
+log(subs)~log(citeprice) %>%
+ lm(log(subs)~log(citeprice),data=.) -> model_1
 
 ```
-
 ## 模型比較
 
 ```{r ols-comp-r, results='hide', warning=FALSE}
+journals %>% 
+  lm(log(subs)~log(citeprice),data=.) -> model_1
+journals %>%
+  lm(log(subs)~log(citeprice)+foundingyear,data=.) -> model_2
 
+library(sandwich)
+library(lmtest)
+library(stargazer)
+
+#使用vcovHC函數來計算HC1型的異質變異（即橫斷面資料下的線性迴歸模型）
+coeftest(model_1, vcov. = vcovHC, type="HC1") -> model_1_coeftest
+coeftest(model_2, vcov. = vcovHC, type="HC1") -> model_2_coeftest
+
+stargazer(model_1, model_2, 
+          se=list(model_1_coeftest[,"Std. Error"], model_2_coeftest[,2]),
+          type="html",
+          align=TRUE)
 ```
