@@ -14,7 +14,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, eval=F)
+knitr::opts_chunk$set(echo = TRUE, eval=T)
 ```
 
 # 參考資料
@@ -146,9 +146,30 @@ journals %>%
 log(subs)~log(citeprice) %>%
  lm(log(subs)~log(citeprice),data=.) -> model_1
 
+
 ```
+#broom處理估計中產生的output
+*tidy()
+*augment()
+*glance()
 ## 模型比較
 
+```{r}
+library(broom)
+```
+```{r}
+tidy(model_1)
+#model底下的估計值
+```
+```{r}
+augment(model_1)
+#找yhat ehat針對每個樣本點可找到的配適值殘差值
+```
+
+```{r}
+glance(model1)
+#配適度R square整個報表的診斷
+```
 ```{r,results='asis'}
 journals %>% 
   lm(log(subs)~log(citeprice),data=.) -> model_1
