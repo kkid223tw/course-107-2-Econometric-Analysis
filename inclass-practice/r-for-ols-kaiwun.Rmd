@@ -170,6 +170,32 @@ augment(model_1)
 glance(model1)
 #配適度R square整個報表的診斷
 ```
+
+```{r}
+tidy(model_1_coeftest)->model1CoeftestDF
+tidy(model_2_coeftest)->model2CoeftestDF
+```
+```{r,results='asis'}
+stargazer(model_1,model_2,
+          se=list(model_1_coeftest[,"std.
+Error"], model_2_coeftest[,2]),
+type ="html",
+align =TRUE)
+```
+```{r}
+stargazer(model_1,model_2,
+          se=list(model1CoeftestDF$std.error, model2CoeftestDF$std.error),
+type ="html",
+align =TRUE)
+```
+
+```{r}
+stargazer(model_1,model_2,
+          se=list(tidy(model1CoeftestDF)$std.error,tidy( model2CoeftestDF)$std.error),
+type ="html",
+align =TRUE)
+```
+
 ```{r,results='asis'}
 journals %>% 
   lm(log(subs)~log(citeprice),data=.) -> model_1
@@ -181,6 +207,8 @@ library(lmtest)
 library(stargazer)
 
 #使用vcovHC函數來計算HC1型的異質變異（即橫斷面資料下的線性迴歸模型）
+#vcovHC是sandwich的function
+#coeftest是lmtest的function
 coeftest(model_1, vcov. = vcovHC, type="HC1") -> model_1_coeftest
 coeftest(model_2, vcov. = vcovHC, type="HC1") -> model_2_coeftest
 
