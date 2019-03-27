@@ -170,7 +170,7 @@ augment(model_1)
 glance(model1)
 #配適度R square整個報表的診斷
 ```
-
+standard error:原始做法使用矩陣
 ```{r}
 tidy(model_1_coeftest)->model1CoeftestDF
 tidy(model_2_coeftest)->model2CoeftestDF
@@ -209,7 +209,7 @@ library(stargazer)
 #使用vcovHC函數來計算HC1型的異質變異（即橫斷面資料下的線性迴歸模型）
 #vcovHC是sandwich的function
 #coeftest是lmtest的function
-coeftest(model_1, vcov. = vcovHC, type="HC1") -> model_1_coeftest
+coeftest(model_1, vcov. = vcovHC, type="HC1") -> model_1_coeftest#此物件為矩陣
 coeftest(model_2, vcov. = vcovHC, type="HC1") -> model_2_coeftest
 
 stargazer(model_1, model_2, 
