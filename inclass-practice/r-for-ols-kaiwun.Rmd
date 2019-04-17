@@ -117,7 +117,6 @@ journals %>%
   select_if(is_numeric) %>%
   summarise_all(cor_citeprice) %>%
   kable()
-
 ```
 
 > 期刊越重要，其引用次數越高，因此高引用次數的期刊，你認為它在「低價格下的訂閱數」（立足點）會比較高還是低？
@@ -196,24 +195,71 @@ type ="html",
 align =TRUE)
 ```
 
-```{r,results='asis'}
+```{r}
 journals %>% 
   lm(log(subs)~log(citeprice),data=.) -> model_1
 journals %>%
   lm(log(subs)~log(citeprice)+foundingyear,data=.) -> model_2
+```
 
+```{r}
 library(sandwich)
 library(lmtest)
 library(stargazer)
+```
 
 #使用vcovHC函數來計算HC1型的異質變異（即橫斷面資料下的線性迴歸模型）
 #vcovHC是sandwich的function
 #coeftest是lmtest的function
+```{r}
 coeftest(model_1, vcov. = vcovHC, type="HC1") -> model_1_coeftest#此物件為矩陣
 coeftest(model_2, vcov. = vcovHC, type="HC1") -> model_2_coeftest
 
 stargazer(model_1, model_2, 
           se=list(model_1_coeftest[,"Std. Error"], model_2_coeftest[,2]),
           type="html",
-          align=TRUE)
+          align = TRUE)
+```
+```{r}
+library(dplyr)
+library(magrittr)
+library(AER)
+data("CigarettesSW")
+```
+```{r}
+CigarettesSW %<>% as_tibble
+CigarettesSW
+```
+```{r}
+class(CigarettesSW)
+```
+```{r}
+CigarettesSW %>% as_tibble()-> CigarettesSW
+as_tibble(CigarettesSW)->CigarettesSW
+```
+```{r}
+CigarettesSW
+```
+
+```{r}
+CigarettesSW %>% 
+  filter(year=="1995") ->
+  CigarettesSW
+```
+```{r}
+CigarettesSW %<>% 
+  mutate(
+    rprice=price/cpi,
+    rincome=income/population/cpi,
+    tdiff=(taxs-tax)/cpi
+  )
+```
+
+```{r}
+model1<-log(packs) ~ log(rprice) 
+model2<-log(packs) ~ log(rprice) + log(rincome)
+```
+```{r}
+model1InoConstant<-
+  
 ```
