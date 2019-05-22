@@ -122,3 +122,13 @@ summary(pool1)
 re1<-plm(model, data=fatality, model='random')
 summary(re1)
 ```
+```{r}
+fe1<-plm(model, data=fatality, model='within', effect='individual')
+summary(fe1)
+```
+
+```{r}
+fe2<-plm(model, data=fatality, model='within', effect='twoways')
+summary(fe2)
+```
+
