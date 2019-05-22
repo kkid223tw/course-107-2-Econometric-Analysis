@@ -129,6 +129,11 @@ summary(fe1)
 
 ```{r}
 fe2<-plm(model, data=fatality, model='within', effect='twoways')
-summary(fe2)
+summary(fe2)#2個固定效果
+```
+```{r}
+library(stargazer)
+stargazer(pool1,re1,fe1,fe2,type='html',
+          column.labels = c("Pooled OLS","RE","FE-individual","FE-two-ways"))
 ```
 
