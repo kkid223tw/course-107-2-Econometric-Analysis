@@ -139,4 +139,9 @@ stargazer(pool1,re1,fe1,fe2,type='html',
 ```{r}
 phtest(fe1,re1)
 ```
+#rejectH0
+```{r}
+fatality %>%
+  plm(mrall~beertax+unrate, data=., method="within",effect = "individual")
+```
 
