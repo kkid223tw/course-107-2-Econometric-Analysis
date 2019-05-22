@@ -136,4 +136,7 @@ library(stargazer)
 stargazer(pool1,re1,fe1,fe2,type='html',
           column.labels = c("Pooled OLS","RE","FE-individual","FE-two-ways"))
 ```
+```{r}
+phtest(fe1,re1)
+```
 
