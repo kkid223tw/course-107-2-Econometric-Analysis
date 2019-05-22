@@ -31,9 +31,89 @@ class(fatality)
 ```
 
 ```{r}
-pdf_fatality<-pdata.frame(fatality,c("state","year"))
+pdf_fatality<-pdata.frame(fatality,c("state","year"))#state是i,year是t
 ```
 
 ```{r}
 class(pdf_fatality)
+```
+```{r}
+#各州啤酒稅（beertax）與車禍死亡率（mrall）
+library(dplyr)
+library(ggplot2)#畫布的函數ggplot+geometric objects(geom_)
+fatality %>% 
+  ggplot()+
+  geom_point(aes(x=beertax,y=I(mrall*1000)))#georm_xxx(aes(x= ,y= ))#mrall*1000變數經過轉換
+
+```
+
+```{r}
+fatality %>% #用顏色分出不同的州
+  ggplot()+
+  geom_point(aes(x=beertax,y=I(mrall*1000),color=state))#or 用year來分顏色color=year
+
+```
+```{r}
+fatality %>% #用顏色分出不同的州
+  ggplot()+
+  geom_point(aes(x=beertax,y=I(mrall*1000)),color="blue")
+```
+
+```{r}
+fatality$state%>%class
+```
+
+
+```{r}
+fatality %>% #用顏色分出不同的州
+  ggplot()+
+  geom_point(aes(x=beertax,y=I(mrall*1000),color=as.factor(state))) 
+
+```
+```{r}
+fatality %>% #用顏色分出不同的州
+  ggplot()+
+  geom_point(aes(x=beertax,y=I(mrall*1000),shape=as.factor(state))) 
+
+```
+```{r}
+fatality %>% 
+  ggplot()+
+  geom_point(aes(x=beertax,y=I(mrall*1000),color=year))
+```
+```{r}
+fatality %>% 
+  group_by(state) %>% #依state分組進行以下程序：#不能直接mutate不然mean是全部的mean
+  mutate(
+    mrall_demean=mrall-mean(mrall),
+    beertax_demean=beertax-mean(beertax)
+    ) %>%
+  select(mrall_demean,beertax_demean.state) %>%
+  ungroup() -> demean_results # grouping variable會被保留
+```
+```{r}
+demean_results %>%
+  ggplot()+
+  geom_point(aes(x=beertax_demean,y=mrall_demean,color=state))+
+  geom_smooth(aes(x=beertax_demean,y=mrall_demean),method = "lm",se=FALSE)
+```
+
+```{r}
+fatality %>% lm(data=., mrall~factor(state)) -> results
+# results$residuals 也會是demean的結果
+```
+```{r}
+lm(mrall_demean~beertax_)
+```
+
+```{r}
+model<-mrall~beertax
+```
+```{r}
+pool1<-plm(model, data=fatality, model='pooling')
+summary(pool1)
+```
+
+```{r}
+lm(mrall)
 ```
