@@ -110,10 +110,15 @@ lm(mrall_demean~beertax_)
 model<-mrall~beertax
 ```
 ```{r}
+fatality<-
+  pdata.frame(fatality.c("state","year"))
+```
+```{r}
 pool1<-plm(model, data=fatality, model='pooling')
 summary(pool1)
 ```
 
 ```{r}
-lm(mrall)
+re1<-plm(model, data=fatality, model='random')
+summary(re1)
 ```
