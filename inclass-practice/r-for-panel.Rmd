@@ -46,13 +46,14 @@ fatality %>%
   geom_point(aes(x=beertax,y=I(mrall*1000)))#georm_xxx(aes(x= ,y= ))#mrall*1000變數經過轉換
 
 ```
-
+mapping的color設定
 ```{r}
 fatality %>% #用顏色分出不同的州
   ggplot()+
   geom_point(aes(x=beertax,y=I(mrall*1000),color=state))#or 用year來分顏色color=year
 
 ```
+非mapping的color設定
 ```{r}
 fatality %>% #用顏色分出不同的州
   ggplot()+
@@ -71,9 +72,14 @@ fatality %>% #用顏色分出不同的州
 
 ```
 ```{r}
-fatality %>% #用顏色分出不同的州
+fatality %>% 
   ggplot()+
-  geom_point(aes(x=beertax,y=I(mrall*1000),shape=as.factor(state))) 
+  geom_point(
+    aes(
+      x=beertax,
+      y=I(mrall*1000),
+      color=as.factor(state),
+      shape=as.factor(year)))
 
 ```
 ```{r}
@@ -88,9 +94,37 @@ fatality %>%
     mrall_demean=mrall-mean(mrall),
     beertax_demean=beertax-mean(beertax)
     ) %>%
-  select(mrall_demean,beertax_demean.state) %>%
+  select(mrall_demean,beertax_demean,state) %>%
   ungroup() -> demean_results # grouping variable會被保留
 ```
+```{r}
+demean_results %>%
+  ggplot()+
+  geom_point(aes(x=beertax_demean,y=mrall_demean,color=as.factor(state)))
+```
+
+demean前第40州的圖
+```{r}
+fatality %>% 
+  filter(state==40) %>%
+  ggplot()+
+  geom_point(
+    aes(
+      x=beertax,
+      y=I(mrall*1000),
+      color=as.factor(state)),
+    size=5)
+```
+
+demean後第40州的圖
+```{r}
+demean_results %>%
+  filter(state==40) %>%
+  ggplot()+
+  geom_point(aes(x=beertax_demean,y=I(mrall_demean*1000),color=as.factor(state)),
+             size=5)
+```
+
 ```{r}
 demean_results %>%
   ggplot()+
