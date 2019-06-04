@@ -1,0 +1,56 @@
+---
+title: "DiD"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(dplyr)
+library(magrittr)
+library(ggplot2)
+load(url("https://github.com/tpemartin/Econometric-Analysis/blob/master/data/public.rda?raw=true"))
+```
+
+```{r}
+public %>%
+  mutate_at(
+    vars(EMPFT,EMPPT,EMPFT2,EMPPT2),
+    funs(as.numeric)
+    ) -> public  
+```
+
+```{r}
+public %>% 
+  group_by(STATE) %>% # 1 if NJ; 0 if Pa
+  summarise(mFT_before=mean(EMPFT,na.rm=T),
+            mPT_before=mean(EMPPT,na.rm=T),
+            mFT_after=mean(EMPFT2,na.rm=T),
+            mPT_after=mean(EMPPT2,na.rm=T)) %>%
+  ungroup ->
+  employment_change
+```
+```{r}
+library(kableExtra)
+employment_change %>% 
+  select(STATE,mFT_before,mFT_after) %>%
+  kable("html")
+```
+```{r}
+public %>% 
+  select(STATE,EMPFT,EMPFT2) %>%
+  group_by(STATE) %>%
+  gather(type,emp,-STATE) -> public2
+```
+
+```{r}
+public2 %>%
+  mutate(
+    STATE1=(STATE==1),
+    AFTER=(type=="EMPFT2"),
+    PolicyImpact=STATE1*AFTER
+  ) -> public2
+```
+
