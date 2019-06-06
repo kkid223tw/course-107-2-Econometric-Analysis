@@ -100,4 +100,8 @@ library(clubSandwich)
 public2 %>% 
   mutate(cluster=factor(STATE):factor(type)) -> public2
 ```
+```{r}
+coef_test(DD_result, vcov = "CR2", cluster = public2$cluster)
+```
+
 
