@@ -73,9 +73,7 @@ public2%>%
 lm(emp~STATE1+AFTER+PolicyImpact,data=public2)->DD_result
 DD_result
 ```
-```{r}
-lm(emp~STATE1+AFTER+I(STATE1*AFTER),data=public2)
-```
+
 #factor()的應用
 ```{r}
 lm(emp~STATE1+AFTER,data=public2)
@@ -85,7 +83,21 @@ lm(emp~STATE1+AFTER,data=public2)
 ```{r}
 lm(emp~factor(STATE)*factor(type),data=public2)
 ```
-```{r}
+有交叉項
 
+```{r}
+lm(emp~STATE1+AFTER+I(STATE1*AFTER),data=public2)
+```
+```{r}
+lm(emp~factor(STATE)+factor(type)+factor(STATE):factor(type),data=public2)
+```
+
+#clubsandwich
+```{r}
+library(clubSandwich)
+```
+```{r}
+public2 %>% 
+  mutate(cluster=factor(STATE):factor(type)) -> public2
 ```
 
