@@ -15,7 +15,7 @@ load(url("https://github.com/tpemartin/Econometric-Analysis/blob/master/data/pub
 ```
 
 ```{r}
-public %>%
+public %>%#只是轉換變數
   mutate_at(
     vars(EMPFT,EMPPT,EMPFT2,EMPPT2),
     funs(as.numeric)
@@ -38,7 +38,14 @@ employment_change %>%
   select(STATE,mFT_before,mFT_after) %>%
   kable("html")
 ```
+#回歸模型
 ```{r}
+public%>%
+  select(STATE,EMPFT,EMPFT2)
+```
+
+```{r}
+library(tidyr)
 public %>% 
   select(STATE,EMPFT,EMPFT2) %>%
   group_by(STATE) %>%
@@ -52,5 +59,33 @@ public2 %>%
     AFTER=(type=="EMPFT2"),
     PolicyImpact=STATE1*AFTER
   ) -> public2
+public2
+```
+```{r}
+public2%>%
+  mutate(
+    STATE1=(STATE==1),
+    AFTER=(type=="EMPFT2"),
+    PolicyImpact=STATE*AFTER
+  )->public2
+```
+```{r}
+lm(emp~STATE1+AFTER+PolicyImpact,data=public2)->DD_result
+DD_result
+```
+```{r}
+lm(emp~STATE1+AFTER+I(STATE1*AFTER),data=public2)
+```
+#factor()的應用
+```{r}
+lm(emp~STATE1+AFTER,data=public2)
+```
+
+
+```{r}
+lm(emp~factor(STATE)*factor(type),data=public2)
+```
+```{r}
+
 ```
 
